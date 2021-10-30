@@ -20,6 +20,7 @@ async function run() {
         const database = client.db('travel_agency');
         const serviceCollection = database.collection('services');
         const expertsCollection = database.collection('experts');
+        const feedbackCollection = database.collection('users_feedback');
         const useServiceCollection = database.collection('use_services');
 
         // get api for service
@@ -42,6 +43,21 @@ async function run() {
             const cursor = expertsCollection.find({});
             const experts = await cursor.toArray();
             res.send(experts);
+        })
+
+        //add orders api
+        app.post('/place_order', async (req, res) => {
+            const order = req.body;
+            const result = await useServiceCollection.insertOne(order);
+            res.json(result)
+        })
+
+        // get single service 
+        app.get('/services/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const service = await servicesCollection.findOne(query);
+            res.json(service);
         })
 
         // get api for manage all orders
@@ -73,19 +89,26 @@ async function run() {
             res.json(result);
         })
 
-        // get single service 
-        app.get('/services/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const service = await servicesCollection.findOne(query);
-            res.json(service);
+        //add feedback api
+        app.post('/feedback', async (req, res) => {
+            const feedback = req.body;
+            const result = await feedbackCollection.insertOne(feedback);
+            res.json(result)
         })
 
-        //add orders api
-        app.post('/place_order', async (req, res) => {
-            const order = req.body;
-            const result = await useServiceCollection.insertOne(order);
-            res.json(result)
+        // get api for see all users_feedback
+        app.get('/users_feedback', async (req, res) => {
+            const cursor = feedbackCollection.find({});
+            const manage = await cursor.toArray();
+            res.send(manage);
+        })
+
+        // delete api from users_feedback 
+        app.delete('/users_feedback/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await feedbackCollection.deleteOne(query);
+            res.json(result);
         })
 
     }
