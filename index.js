@@ -74,7 +74,7 @@ async function run() {
             const options = { upsert: true };
             const updateDoc = {
                 $set: {
-                    status: "√ Accept"
+                    status: "Accept"
                 },
             };
             const result = await useServiceCollection.updateOne(filter, updateDoc, options)
